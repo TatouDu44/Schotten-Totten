@@ -7,6 +7,8 @@ using Unity.VisualScripting;
 using System.Globalization;
 using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
+using UnityEditor.PackageManager.Requests;
+// Github version
 
 public class GameManager : MonoBehaviour
 {
@@ -27,8 +29,22 @@ public class GameManager : MonoBehaviour
     public bool BlueStart = true;
     public bool HasEnded = false;
 
+
+    //variable for the testing part
+
+    public bool testing = false;
+    public int cycles = 10;
+
+    public List<Color> result;
+
+    public int cycle_index = 0;
+
     void Start()
     {
+        if(cycle_index == 0){
+            result = new List<Color>();
+        }
+        HasEnded = false;
         //function to create a list of card
         Deck = CreateDeck();
         //mix them up
@@ -46,6 +62,32 @@ public class GameManager : MonoBehaviour
         DrawingHands.GetComponent<DrawingBoard>().DrawingBorneOnBoard(Board);
 
         Board = CreateBoard();
+
+        if(testing){          
+            
+            while(HasEnded == false){
+                tour();
+                }
+            
+            if(cycle_index<cycles){
+                cycle_index++;
+                reset();
+                Start();
+                }
+            else{
+                int blue = 0;
+                int red = 0;
+                int draw = 0;
+                for (int i = 0;i<cycles;i++){
+                    if(result[i]==Color.blue){blue++;}
+                    if(result[i]==Color.red){red++;}
+                    if(result[i]==Color.gray){draw++;}
+                }
+                Debug.Log("Blue : " + blue +" Red : "+ red+" Draw : "+draw);
+            }
+            
+        }
+
 
     }
 
@@ -98,8 +140,17 @@ public class GameManager : MonoBehaviour
     }
     public void tour(){
         //player pick a card and where to place it
-        int pointer = FindAnyObjectByType<PlayerMov>().GetComponent<PlayerMov>().pointer;
-        int pointer_board = FindAnyObjectByType<PlayerMov>().GetComponent<PlayerMov>().pointer_board;
+        int pointer = 0;
+        int pointer_board = 0;
+
+        if(testing){
+            FindAnyObjectByType<Adversary>().GetComponent<Adversary>().PickCard(Board,BlueDeck,"Blue");
+            pointer = FindAnyObjectByType<Adversary>().GetComponent<Adversary>().pointer;
+            pointer_board = FindAnyObjectByType<Adversary>().GetComponent<Adversary>().pointer_board;}
+        else{       
+            pointer = FindAnyObjectByType<PlayerMov>().GetComponent<PlayerMov>().pointer;
+            pointer_board = FindAnyObjectByType<PlayerMov>().GetComponent<PlayerMov>().pointer_board;}
+        
 
         //the card get added to the board
         
@@ -118,7 +169,7 @@ public class GameManager : MonoBehaviour
         DrawingHands.GetComponent<DrawingHands>().DrawBlueHands(BlueDeck);
 
         //Red pick a card and where to place it
-        FindAnyObjectByType<Adversary>().GetComponent<Adversary>().PickCard(Board,RedDeck);
+        FindAnyObjectByType<Adversary>().GetComponent<Adversary>().PickCard(Board,RedDeck,"Red");
 
         int pointer_Adv = FindAnyObjectByType<Adversary>().GetComponent<Adversary>().pointer;
         int pointer_board_Adv = FindAnyObjectByType<Adversary>().GetComponent<Adversary>().pointer_board;
@@ -151,11 +202,14 @@ public class GameManager : MonoBehaviour
             Color col1 = ListOfBorne[i].GetComponent<Image>().color;
             Color col2 = ListOfBorne[i+1].GetComponent<Image>().color;
             Color col3 = ListOfBorne[i+2].GetComponent<Image>().color;
-            if(col1 == col2 & col2 == col3 & col1 == Color.red){EndGame(Color.red);}
-            if(col1 == col2 & col2 == col3 & col1 == Color.blue){EndGame(Color.blue);}
+            if(col1 == col2 & col2 == col3 & col1 == Color.red){HasEnded = true; EndGame(Color.red);}
+            if(col1 == col2 & col2 == col3 & col1 == Color.blue){HasEnded = true;EndGame(Color.blue);}
     }
+        
 
         if(Deck.Count == 0 & BlueDeck.Count ==0 & RedDeck.Count ==0){
+            
+            HasEnded = true; 
             int bluecount = 0;
             int redcount = 0;
             for (int i = 0;i<9;i++){
@@ -221,12 +275,20 @@ public class GameManager : MonoBehaviour
 
     public void EndGame(Color color){
         EndgameCanvas.gameObject.SetActive(true);
-        if(color == Color.grey){EndgameCanvas.transform.Find("Draw").gameObject.SetActive(true);
-            EndgameCanvas.transform.Find("Win").gameObject.SetActive(false);
+
+        if(testing){
+            result.Add(color);
+        }
+
+        if(color == Color.gray){
+            EndgameCanvas.transform.Find("Draw").gameObject.SetActive(true);
+            EndgameCanvas.transform.Find("Wins").gameObject.SetActive(false);
             EndgameCanvas.transform.Find("Loses").gameObject.SetActive(false);
             EndgameCanvas.transform.Find("Who_Win").gameObject.SetActive(false);
-            EndgameCanvas.transform.Find("Who_loses").gameObject.SetActive(false);}
+            EndgameCanvas.transform.Find("Who_loses").gameObject.SetActive(false);
+            }
         if(color == Color.blue){
+            EndgameCanvas.transform.Find("Draw").gameObject.SetActive(false);
             EndgameCanvas.transform.Find("Who_Win").GetComponent<TextMeshProUGUI>().text = "BLUE";
             EndgameCanvas.transform.Find("Who_Win").GetComponent<TextMeshProUGUI>().color = color;
             EndgameCanvas.transform.Find("Who_loses").GetComponent<TextMeshProUGUI>().text = "RED";
@@ -234,6 +296,7 @@ public class GameManager : MonoBehaviour
             
         }
         if(color == Color.red){
+            EndgameCanvas.transform.Find("Draw").gameObject.SetActive(false);
             EndgameCanvas.transform.Find("Who_loses").GetComponent<TextMeshProUGUI>().text = "BLUE";
             EndgameCanvas.transform.Find("Who_loses").GetComponent<TextMeshProUGUI>().color = Color.blue;
             EndgameCanvas.transform.Find("Who_Win").GetComponent<TextMeshProUGUI>().text = "RED";
@@ -241,6 +304,31 @@ public class GameManager : MonoBehaviour
             
         }
         
+    }
+    public void reset(){
+        for(int i = 0;i<9;i++){
+            for (int j=0;j<Board[i].Count;j++){
+                Destroy(Board[i][j].gameObject);
+            }
+        }
+        Board = new List<List<RectTransform>>();
+        
+        for (int i = 0;i<BlueDeck.Count;i++){
+            Destroy(BlueDeck[i].gameObject);
+        }
+        BlueDeck = new List<RectTransform>();
+        for (int i = 0;i<RedDeck.Count;i++){
+            Destroy(RedDeck[i].gameObject);
+        }
+        RedDeck = new List<RectTransform>();
+        for (int i = 0;i<Deck.Count;i++){
+            Destroy(Deck[i].gameObject);
+        }
+        Deck = new List<RectTransform>();
+
+        FindAnyObjectByType<DrawingHands>().GetComponent<DrawingBoard>().resetborne();
+        
+        EndgameCanvas.gameObject.SetActive(false);
     }
 
 

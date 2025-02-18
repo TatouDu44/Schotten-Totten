@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class Adversary : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Adversary : MonoBehaviour
 
     private List<int> indice;
     
-    public void PickCard(List<List<RectTransform>> Board, List<RectTransform> RedDeck){
+    public void PickCard(List<List<RectTransform>> Board, List<RectTransform> RedDeck, String tag){
 
         indice = new List<int>();
         for (int i  = 0;i< RedDeck.Count;i++){indice.Add(i);}
@@ -22,7 +23,7 @@ public class Adversary : MonoBehaviour
         for(int i = 0;i<9;i++){
             int count = 0;
             for (int j = 0;j<Board[i].Count;j++){
-                if(Board[i][j].tag == "Red"){count++;}
+                if(Board[i][j].tag == tag){count++;}
             }
             if(count !=3){indice.Add(i);}
         }

@@ -29,6 +29,14 @@ public class DrawingBoard : MonoBehaviour
         
 
     }
+
+    public void resetborne(){
+        for (int i=0;i<9;i++){
+            Destroy(ListOfBorne[i].gameObject);
+            
+        }
+        ListOfBorne = new List<RectTransform>();
+    }
     public void DrawingCardOnBoard( RectTransform card, int index, List<RectTransform> SubBoard){
 
         float w = canvas.GetComponent<RectTransform>().rect.width;
@@ -39,9 +47,9 @@ public class DrawingBoard : MonoBehaviour
         int CardAlreadyIn = 0;
         for (int i = 0;i<SubBoard.Count-1;i++){if(SubBoard[i].tag == tag){CardAlreadyIn++;}}
 
-        if (CardAlreadyIn ==0){Debug.Log("canvas 1");SetCanvas = canvas_1;}
-        if (CardAlreadyIn ==1){Debug.Log("canvas 2");SetCanvas = canvas_2;}
-        if (CardAlreadyIn ==2){Debug.Log("canvas 3");SetCanvas = canvas_3;}
+        if (CardAlreadyIn ==0){SetCanvas = canvas_1;}
+        if (CardAlreadyIn ==1){SetCanvas = canvas_2;}
+        if (CardAlreadyIn ==2){SetCanvas = canvas_3;}
 
         if(card.tag == "Blue"){
             card.localPosition =  new Vector3((index-4)*w/9,-h/6 - CardAlreadyIn*h/10,CardAlreadyIn);

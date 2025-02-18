@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
+using NUnit.Framework.Internal;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
@@ -14,10 +15,15 @@ public class PlayerMov : MonoBehaviour
     public bool Selected = false;
 
     private List<RectTransform> BlueHands;
+    public bool testing;
+
+    void Start(){
+        testing = gameManager.GetComponent<GameManager>().testing;
+    }
 
     // Update is called once per frame
     void Update()
-    {   
+    {   if(!testing){
         List<List<RectTransform>> Board = gameManager.GetComponent<GameManager>().Board;
         List<int> indice = new List<int>();
         List<RectTransform> BlueDeck = gameManager.GetComponent<GameManager>().BlueDeck;
@@ -60,6 +66,7 @@ public class PlayerMov : MonoBehaviour
             
         }
         
+    }
     }
     void Change(){
         
