@@ -762,7 +762,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &551030745
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1931,6 +1931,7 @@ MonoBehaviour:
   pointer: 3
   pointer_board: 0
   Selected: 0
+  testing: 0
 --- !u!4 &1247789087
 Transform:
   m_ObjectHideFlags: 0
@@ -2277,6 +2278,10 @@ MonoBehaviour:
   EndgameCanvas: {fileID: 1092246935}
   BlueStart: 1
   HasEnded: 0
+  testing: 0
+  cycles: 100
+  result: []
+  cycle_index: 0
 --- !u!1001 &796809099406905486
 PrefabInstance:
   m_ObjectHideFlags: 0

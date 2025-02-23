@@ -32,4 +32,9 @@ public class Adversary : MonoBehaviour
         pointer_board = indice[0];
 
     }
+
+    public void PickCardColorBased(List<List<RectTransform>> Board, List<RectTransform> RedDeck, String tag){
+        bool find = false;
+        
+    }
 }
